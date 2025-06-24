@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './config.ts';
-import fs from 'fs';
+// import fs from 'fs';
 import FormData from 'form-data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import storage from 'node-persist';
@@ -69,12 +69,10 @@ export async function updateRecords(object: string, externalId: string, payload:
     return response.data;
 }
 
-export async function uploadImage(object: string, urlImage: string) {
+export async function uploadImage(object: string, base64Image: string) {
     try {
         const formData = new FormData();
         const headers = await _header();
-
-        formData.append('file', fs.createReadStream(urlImage));
 
         const profileStorage = await AsyncStorage.getItem('ConnectxLocalStorage');
         // const profileStorage = await storage.getItem('ConnectxLocalStorage');
@@ -83,6 +81,7 @@ export async function uploadImage(object: string, urlImage: string) {
         }
         // const profile = JSON.parse(profileStorage);
         const profile = typeof profileStorage === 'string' ? JSON.parse(profileStorage) : profileStorage;
+        formData.append('file', base64Image); // base64 string
         formData.append('path', `Organizes/${profile.organizeId}/objects/${object}`);
         headers['Content-Type'] = 'multipart/form-data';
         const url = `${API_URL}/storage/uploadFile`;
